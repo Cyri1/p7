@@ -5,10 +5,11 @@ module.exports = (req, res, next) => {
         // on extrait le token du header http et on vérifie qu'il 
         const token = req.headers.authorization.split(' ')[1];
         const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-        const userId = decodedToken.userId;
+        const isAdmin = decodedToken.isAdmin;
 
-        if (!userId) {
-            throw 'Token non valide';
+        //authentification pour les routes admins (par exemple : supprimer un utilisateur)
+        if (!isAdmin) {
+            throw 'Privilège insuffisants !';
         } else {
             next();
         }

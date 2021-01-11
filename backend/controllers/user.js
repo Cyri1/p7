@@ -42,7 +42,7 @@ exports.signup = (req, res, next) => {
                             password: hash
                         });
                         console.log(user);
-                        //sauvegarde dans la bdd de l'email / et du hash password
+                        //sauvegarde dans la bdd des infos utilisateurs et du hash password
                         user.save()
                             .then(() => res.status(201).json({
                                 message: 'Utilisateur créé !'
@@ -98,11 +98,10 @@ exports.login = (req, res, next) => {
                         username: user.username,
                         token: jwt.sign({
                                 userId: user.id,
-                                isAdmin: user.isAdmin,
-                                username: user.username
+                                isAdmin: user.isAdmin
                             },
                             'RANDOM_TOKEN_SECRET', {
-                                expiresIn: '1h'
+                                expiresIn: '48h'
                             }
                         )
                     });
@@ -116,3 +115,24 @@ exports.login = (req, res, next) => {
         }));
 };
 
+exports.findOneUser = (req, res, next) => {
+
+    User.findOne({
+        attributes: ['firstName', 'lastName', 'username', 'email', 'imageUrl', 'bio'],
+        where: {
+            id: req.params.id
+        }
+    }).then((user) => {
+        if (user) {
+            const buff = Buffer.from(user.email, 'base64');
+            const email = buff.toString('utf-8');
+            res.status(200).json({firstName: user.firstName, lastName: user.lastName, username: user.username, email: email, bio: user.bio, imageUrl: user.imageUrl});
+        } else {
+            res.status(404).json({
+                error: 'Utilisateur introuvable'
+            });
+        }
+    }).catch(() => res.status(500).json({
+        error: 'erreur lors de la recherche de cet utilisateur'
+    }));
+}
