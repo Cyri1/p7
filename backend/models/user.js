@@ -7,20 +7,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
 
       models.User.hasMany(models.Post, {
-        allowNull:false,
+        allowNull: false,
         foreignKey: 'userId'
       });
 
       models.User.hasMany(models.Comment, {
-        allowNull:false,
+        allowNull: false,
         foreignKey: 'userId'
       });
-      
+
       models.User.hasMany(models.Like, {
         allowNull: false,
         foreignKey: 'userId'
       });
-      
+
     }
   };
   User.init({
