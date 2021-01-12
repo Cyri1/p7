@@ -35,13 +35,12 @@ exports.signup = (req, res, next) => {
                         //encodage en base64 de l'email
 
                         const user = new User({ //modèle
-                            firstName: firstname,
-                            lastName: lastname,
+                            firstname: firstname,
+                            lastname: lastname,
                             username: username,
                             email: base64,
                             password: hash
                         });
-                        console.log(user);
                         //sauvegarde dans la bdd des infos utilisateurs et du hash password
                         user.save()
                             .then(() => res.status(201).json({
@@ -71,6 +70,7 @@ exports.login = (req, res, next) => {
     const password = req.body.password;
     const buff = Buffer.from(email, 'utf-8');
     const base64 = buff.toString('base64'); //masquage email
+
 
     User.findOne({
             where: {
@@ -117,8 +117,14 @@ exports.login = (req, res, next) => {
 
 exports.findOneUser = (req, res, next) => {
 
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+    const paramId = Number(req.params.id)
+    var isMe = userId === paramId ? true : false;
+
     User.findOne({
-        attributes: ['firstName', 'lastName', 'username', 'email', 'imageUrl', 'bio'],
+        attributes: ['firstname', 'lastname', 'username', 'email', 'imageUrl', 'bio'],
         where: {
             id: req.params.id
         }
@@ -126,7 +132,16 @@ exports.findOneUser = (req, res, next) => {
         if (user) {
             const buff = Buffer.from(user.email, 'base64');
             const email = buff.toString('utf-8');
-            res.status(200).json({firstName: user.firstName, lastName: user.lastName, username: user.username, email: email, bio: user.bio, imageUrl: user.imageUrl});
+
+            res.status(200).json({
+                firstname: user.firstname,
+                lastname: user.lastname,
+                username: user.username,
+                email: email,
+                bio: user.bio,
+                imageUrl: user.imageUrl,
+                isMe: isMe
+            });
         } else {
             res.status(404).json({
                 error: 'Utilisateur introuvable'
@@ -136,3 +151,51 @@ exports.findOneUser = (req, res, next) => {
         error: 'erreur lors de la recherche de cet utilisateur'
     }));
 }
+
+exports.findAllUsers = (req, res, next) => {
+    User.findAll()
+        .then((users) => {
+            res.status(200).json({
+                users
+            });
+        })
+        .catch(error => res.status(400).json({
+            error
+        }));
+};
+
+
+exports.updateUser = (req, res, next) => {
+
+    //si req.file existe on modifie l'url image
+    const userObject = req.file ? {
+        ...req.body.user,
+        imageUrl: req.file.filename
+    } : {
+    //si pas de req.file
+        ...req.body
+    };
+    User.update({
+            ...userObject,
+            id: req.params.id
+        }, {
+            where: {
+                id: req.params.id
+            }
+        })
+        .then(() => res.status(200).json({
+            message: 'Utilisateur modifié avec succès'
+        }))
+        .catch(error => res.status(400).json({
+            error
+        }));
+
+};
+
+
+// const userObject = req.file ? {
+//     ...req.body.user,
+//     imageUrl: req.file.filename
+// } : {
+//     ...req.body
+// };

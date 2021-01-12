@@ -14,7 +14,7 @@ module.exports = (req, res, next) => {
         }
     } catch (error) {
         res.status(401).json({
-            error: error
+            error: error || 'Erreur d\'authentification'
         });
     }
 };
