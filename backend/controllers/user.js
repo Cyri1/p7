@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const models = require('../models')
-const User = models.users;
+const models = require('../models');
 
 //réception d'une demande de création de compte (post)
 exports.signup = (req, res, next) => {
@@ -21,7 +20,7 @@ exports.signup = (req, res, next) => {
     const buff = Buffer.from(email, 'utf-8');
     const base64 = buff.toString('base64'); //masquage email
 
-    User.findOne({
+    models.User.findOne({
             attributes: ['email'],
             where: {
                 email: base64
@@ -32,17 +31,14 @@ exports.signup = (req, res, next) => {
                 //hash du password avec bcrypt
                 bcrypt.hash(req.body.password, 10)
                     .then(hash => {
-                        //encodage en base64 de l'email
 
-                        const user = new User({ //modèle
-                            firstname: firstname,
-                            lastname: lastname,
-                            username: username,
-                            email: base64,
-                            password: hash
-                        });
-                        //sauvegarde dans la bdd des infos utilisateurs et du hash password
-                        user.save()
+                        models.User.create({
+                                firstname: firstname,
+                                lastname: lastname,
+                                username: username,
+                                email: base64,
+                                password: hash
+                            })
                             .then(() => res.status(201).json({
                                 message: 'Utilisateur créé !'
                             }))
@@ -72,7 +68,7 @@ exports.login = (req, res, next) => {
     const base64 = buff.toString('base64'); //masquage email
 
 
-    User.findOne({
+    models.User.findOne({
             where: {
                 email: base64
             }
@@ -121,9 +117,9 @@ exports.findOneUser = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const userId = decodedToken.userId;
     const paramId = Number(req.params.id)
-    var isMe = userId === paramId ? true : false;
+    var isMe = userId === paramId ? true : false; // pour afficher des boutons d'édition sur le frontend pour mon profile
 
-    User.findOne({
+    models.User.findOne({
         attributes: ['firstname', 'lastname', 'username', 'email', 'imageUrl', 'bio'],
         where: {
             id: req.params.id
@@ -153,11 +149,11 @@ exports.findOneUser = (req, res, next) => {
 }
 
 exports.findAllUsers = (req, res, next) => {
-    User.findAll()
+    models.User.findAll()
         .then((users) => {
-            res.status(200).json({
+            res.status(200).json(
                 users
-            });
+            );
         })
         .catch(error => res.status(400).json({
             error
@@ -172,10 +168,10 @@ exports.updateUser = (req, res, next) => {
         ...req.body.user,
         imageUrl: req.file.filename
     } : {
-    //si pas de req.file
+        //si pas de req.file
         ...req.body
     };
-    User.update({
+    models.User.update({
             ...userObject,
             id: req.params.id
         }, {

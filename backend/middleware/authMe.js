@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
         const isAdmin = decodedToken.isAdmin;
         const paramId = Number(req.params.id)
 
-        if (paramId !== userId && !isAdmin) { //si l'id dans les parametres ne correspond pas a mon userId et que je ne suis pas admin
+        if (paramId !== userId && !isAdmin) { //si l'id dans les parametres ne correspond pas a mon userId ou que je ne suis pas admin
             throw 'Privilège insuffisants !';
         } else {
             next();

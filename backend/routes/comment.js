@@ -5,8 +5,7 @@ const authAdmin = require('../middleware/authAdmin');
 const authMe = require('../middleware/authMe');
 const auth = require('../middleware/auth');
 
-// router.post('/', auth, commentCtrl.createComment);
-// router.put('/', authMe, commentCtrl.updateComment);
-// router.delete('/', authMe, commentCtrl.deleteComment);
+// router.put('/:id', authMe, commentCtrl.updateComment);
+// router.delete('/:id', authMe, commentCtrl.deleteComment);
 
 module.exports = router;

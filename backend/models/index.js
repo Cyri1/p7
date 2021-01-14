@@ -25,7 +25,7 @@ fs
     db[model.name] = model;
   });
 
-Object.keys(db).forEach(modelName => {
+  Object.keys(db).forEach(modelName => {
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
@@ -33,10 +33,5 @@ Object.keys(db).forEach(modelName => {
 
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
-
-db.users = require('./user.js')(sequelize, Sequelize);
-db.likes = require('./like.js')(sequelize, Sequelize);
-db.posts = require('./post.js')(sequelize, Sequelize);
-db.comments = require('./comment.js')(sequelize, Sequelize);
 
 module.exports = db;

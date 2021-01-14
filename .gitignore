@@ -2,3 +2,5 @@ backend/node_modules
 backend/config/config.json
 backend/config/config.js
 backend/.env
+backend/migrations
+backend/seeders

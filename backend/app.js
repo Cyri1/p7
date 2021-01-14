@@ -1,12 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const helmet = require('helmet');
-const app = express();
 const bodyParser = require('body-parser');
 const commentRoutes = require('./routes/comment');
 const postRoutes = require('./routes/post');
 const userRoutes = require('./routes/user');
 const path = require('path');
+const app = express();
 
 //définition des headers 
 app.use(helmet());

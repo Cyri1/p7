@@ -8,8 +8,10 @@ const multer = require('../middleware/multer-config');
 
 router.post('/', auth, multer, postCtrl.createPost);
 router.get('/', auth, postCtrl.findAllPosts);
-//router.get('/:id/likes', auth, postCtrl.findAllLikes); // a intégrer dans le résultat de findAllPosts ?
-// router.put('/:id', authMe, multer, postCtrl.updatePost);
+router.put('/:id', auth, multer, postCtrl.updatePost);
 // router.delete('/:id', authMe, postCtrl.deletePost);
+
+router.post('/:id/comments', auth, postCtrl.createComment);
+router.post('/:id/likes', auth, postCtrl.createLike); //create and delete likes
 
 module.exports = router;
