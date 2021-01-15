@@ -40,7 +40,6 @@ exports.findAllPosts = (req, res, next) => {
     }] // pour pouvoir afficher un bouton d'édition de post uniqement sur les posts appartenant au user connecté et aux admins
 
     models.Post.findAll({
-            order: ['createdAt', 'DESC'],
             include: [{
                     model: models.User,
                     attributes: ['username', 'imageUrl'],
@@ -62,8 +61,10 @@ exports.findAllPosts = (req, res, next) => {
                     }]
                 }
             ],
-            attributes: ['postTitle', 'postContent', 'postImageUrl', 'createdAt', 'updatedAt'],
-
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            attributes: ['postTitle', 'postContent', 'postImageUrl', 'createdAt', 'updatedAt']
         })
         .then((posts) => {
             res.status(200).json({
@@ -86,7 +87,7 @@ exports.updatePost = (req, res, next) => {
     models.Post.findOne({
         attributes: ['userId'],
         where: {
-            id: req.params.id
+            postId: req.params.postId
         }
     }).then((post) => {
         if (post.userId == userId || isAdmin) { // vérifie si le post devant être modifié appartient à la personne connecté ou si c'est un admin
@@ -100,10 +101,10 @@ exports.updatePost = (req, res, next) => {
             };
             models.Post.update({
                     ...postObject,
-                    id: req.params.id
+                    postId: req.params.postId
                 }, {
                     where: {
-                        id: req.params.id
+                        postId: req.params.postId
                     }
                 })
                 .then(() => res.status(200).json({
@@ -129,10 +130,10 @@ exports.createComment = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
 
     const userId = decodedToken.userId;
-    const postId = req.params.id;
+    const postId = req.params.postId;
     const commentContent = req.body.commentContent;
 
-    models.Like.create({
+    models.Comment.create({
             userId: userId,
             postId: postId,
             commentContent: commentContent
@@ -151,7 +152,7 @@ exports.createLike = (req, res, next) => {
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
 
     const userId = decodedToken.userId;
-    const postId = req.params.id;
+    const postId = req.params.postId;
 
     models.Like.findOne({
         where: {
@@ -162,10 +163,10 @@ exports.createLike = (req, res, next) => {
                     postId: postId
                 }
             ]
-        }
+        },
+        attributes: ['likeId', 'userId', 'postId', 'createdAt', 'updatedAt']
     }).then((exist) => { //toggle like / suppression du like
         if (!exist) {
-
             models.Like.create({
                     userId: userId,
                     postId: postId
@@ -189,6 +190,54 @@ exports.createLike = (req, res, next) => {
         }
     }).catch(() => res.status(500).json({
         error: 'erreur lors de la recherche du like'
+    }));
+
+};
+
+exports.deletePost = (req, res, next) => {
+
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+    const isAdmin = decodedToken.isAdmin;
+
+    models.Post.findOne({
+        where: {
+            postId: req.params.postId
+        }
+    }).then((post) => {
+        if (post.userId == userId || isAdmin) { // vérifie si le post devant être supprimé appartient à la personne connecté ou si c'est un admin
+            models.Comment.destroy({
+                    where: {
+                        postId: post.postId
+                    }
+                }).then(() =>
+                    models.Like.destroy({
+                        where: {
+                            postId: post.postId
+                        }
+                    })
+                    .then(() =>
+                        models.Post.destroy({
+                            where: {
+                                postId: post.postId
+                            }
+                        })
+                        .then(() => res.status(200).json({
+                            message: 'Post supprimé avec succès'
+                        }))
+                    )
+                )
+                .catch(error => res.status(400).json({
+                    error
+                }));
+        } else {
+            res.status(403).json({
+                error: 'Privilèges insufisants pour supprimer ce post'
+            });
+        }
+    }).catch(() => res.status(500).json({
+        error: 'erreur lors de la recherche de ce post'
     }));
 
 };

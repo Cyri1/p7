@@ -89,11 +89,11 @@ exports.login = (req, res, next) => {
                     }
                     res.status(200).json({
                         //si oui création d'un token avec json web token et la clé secrete
-                        userId: user.id,
+                        userId: user.userId,
                         isAdmin: user.isAdmin,
                         username: user.username,
                         token: jwt.sign({
-                                userId: user.id,
+                                userId: user.userId,
                                 isAdmin: user.isAdmin
                             },
                             'RANDOM_TOKEN_SECRET', {
@@ -116,13 +116,13 @@ exports.findOneUser = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
     const userId = decodedToken.userId;
-    const paramId = Number(req.params.id)
+    const paramId = Number(req.params.userId)
     var isMe = userId === paramId ? true : false; // pour afficher des boutons d'édition sur le frontend pour mon profile
 
     models.User.findOne({
         attributes: ['firstname', 'lastname', 'username', 'email', 'imageUrl', 'bio'],
         where: {
-            id: req.params.id
+            userId: req.params.userId
         }
     }).then((user) => {
         if (user) {
@@ -173,10 +173,10 @@ exports.updateUser = (req, res, next) => {
     };
     models.User.update({
             ...userObject,
-            id: req.params.id
+            userId: req.params.userId
         }, {
             where: {
-                id: req.params.id
+                userId: req.params.userId
             }
         })
         .then(() => res.status(200).json({

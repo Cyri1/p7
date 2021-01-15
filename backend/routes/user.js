@@ -8,11 +8,11 @@ const multer = require('../middleware/multer-config');
 
 router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
-router.get('/:id', auth, userCtrl.findOneUser);
+router.get('/:userId', auth, userCtrl.findOneUser);
 router.get('/', auth, userCtrl.findAllUsers);
-router.put('/:id', authMe, multer, userCtrl.updateUser);
+router.put('/:userId', authMe, multer, userCtrl.updateUser);
 
-// router.get('/:id/posts', auth, userCtrl.findAllPosts);
-// router.delete('/:id', authAdmin, userCtrl.deleteUser);
+// router.get('/:userId/posts', auth, userCtrl.findAllPosts);
+// router.delete('/:userId', authAdmin, userCtrl.deleteUser);
 
 module.exports = router;
