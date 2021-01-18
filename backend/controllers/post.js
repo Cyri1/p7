@@ -64,7 +64,7 @@ exports.findAllPosts = (req, res, next) => {
             order: [
                 ['createdAt', 'DESC']
             ],
-            attributes: ['postTitle', 'postContent', 'postImageUrl', 'createdAt', 'updatedAt']
+            attributes: ['postId', 'postTitle', 'postContent', 'postImageUrl', 'createdAt', 'updatedAt']
         })
         .then((posts) => {
             res.status(200).json({

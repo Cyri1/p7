@@ -163,6 +163,11 @@ exports.findAllUsers = (req, res, next) => {
 
 exports.updateUser = (req, res, next) => {
 
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+    const isAdmin = decodedToken.isAdmin;
+
     //si req.file existe on modifie l'url image
     const userObject = req.file ? {
         ...req.body.user,
@@ -171,6 +176,8 @@ exports.updateUser = (req, res, next) => {
         //si pas de req.file
         ...req.body
     };
+
+    if (req.params.userId == userId || isAdmin) {
     models.User.update({
             ...userObject,
             userId: req.params.userId
@@ -184,6 +191,11 @@ exports.updateUser = (req, res, next) => {
         }))
         .catch(error => res.status(400).json({
             error
-        }));
-
+        }));        
+    }
+    else {
+        res.status(403).json({
+            error: 'Privilèges insuffisants'
+        });
+    }
 };

@@ -10,7 +10,7 @@ router.post('/signup', userCtrl.signup);
 router.post('/login', userCtrl.login);
 router.get('/:userId', auth, userCtrl.findOneUser);
 router.get('/', auth, userCtrl.findAllUsers);
-router.put('/:userId', authMe, multer, userCtrl.updateUser);
+router.put('/:userId', auth, multer, userCtrl.updateUser);
 
 // router.get('/:userId/posts', auth, userCtrl.findAllPosts);
 // router.delete('/:userId', authAdmin, userCtrl.deleteUser);
