@@ -178,24 +178,118 @@ exports.updateUser = (req, res, next) => {
     };
 
     if (req.params.userId == userId || isAdmin) {
-    models.User.update({
-            ...userObject,
-            userId: req.params.userId
-        }, {
-            where: {
+        models.User.update({
+                ...userObject,
                 userId: req.params.userId
-            }
-        })
-        .then(() => res.status(200).json({
-            message: 'Utilisateur modifié avec succès'
-        }))
-        .catch(error => res.status(400).json({
-            error
-        }));        
-    }
-    else {
+            }, {
+                where: {
+                    userId: req.params.userId
+                }
+            })
+            .then(() => res.status(200).json({
+                message: 'Utilisateur modifié avec succès'
+            }))
+            .catch(error => res.status(400).json({
+                error
+            }));
+    } else {
         res.status(403).json({
             error: 'Privilèges insuffisants'
         });
     }
+};
+
+exports.findAllPosts = (req, res, next) => {
+
+    models.Post.findAll({
+            include: [{
+                    model: models.User,
+                    attributes: ['username', 'imageUrl'],
+                },
+                {
+                    model: models.Like,
+                    attributes: ['createdAt', 'updatedAt'],
+                    include: [{
+                        model: models.User,
+                        attributes: ['username', 'imageUrl'],
+                    }]
+                },
+                {
+                    model: models.Comment,
+                    attributes: ['commentContent', 'createdAt', 'updatedAt'],
+                    include: [{
+                        model: models.User,
+                        attributes: ['username', 'imageUrl'],
+                    }]
+                }
+            ],
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            attributes: ['postId', 'postTitle', 'postContent', 'postImageUrl', 'createdAt', 'updatedAt'],
+            where: {
+                userId: req.params.userId
+            }
+        })
+        .then((posts) => {
+            res.status(200).json({
+                posts
+            });
+        })
+        .catch(error => res.status(400).json({
+            error
+        }));
+};
+
+exports.deleteUser = (req, res, next) => {
+
+    const token = req.headers.authorization.split(' ')[1];
+    const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
+    const userId = decodedToken.userId;
+    const isAdmin = decodedToken.isAdmin;
+
+    models.User.findOne({
+        where: {
+            userId: req.params.userId
+        }
+    }).then((user) => {
+        if (user.userId == userId || isAdmin) { // vérifie si le compte devant être supprimé appartient à la personne connecté ou si c'est un admin
+            models.Comment.destroy({
+                    where: {
+                        userId: user.userId
+                    }
+                }).then(() =>
+                    models.Like.destroy({
+                        where: {
+                            userId: user.userId
+                        }
+                    })
+                    .then(() =>
+                        models.Post.destroy({
+                            where: {
+                                userId: user.userId
+                            }
+                        })
+                        .then(() =>
+                            models.User.destroy({
+                                where: {
+                                    userId: user.userId
+                                }
+                            })
+                            .then(() => res.status(200).json({
+                                message: 'Utilisateur supprimé avec succès'
+                            })))
+                    )
+                )
+                .catch(error => res.status(400).json({
+                    error
+                }));
+        } else {
+            res.status(403).json({
+                error: 'Privilèges insufisants pour supprimer cet utilisateur'
+            });
+        }
+    }).catch(() => res.status(500).json({
+        error: 'erreur lors de la recherche de cet utilisateur'
+    }));
 };

@@ -239,5 +239,4 @@ exports.deletePost = (req, res, next) => {
     }).catch(() => res.status(500).json({
         error: 'erreur lors de la recherche de ce post'
     }));
-
 };
