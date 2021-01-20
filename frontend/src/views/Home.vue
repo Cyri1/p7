@@ -1,18 +1,31 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <Header></Header>
+    <div class="justify-content-center container mt-2">
+        <b-tabs content-class="mt-3">
+          <b-tab active title="Se connecter">
+            <Login></Login>
+          </b-tab>
+          <b-tab title="Créer un compte">
+            <Register></Register>
+          </b-tab>
+        </b-tabs>
+    </div>
   </div>
 </template>
 
 <script>
 // @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
+import Header from '@/components/Header.vue'
+import Login from '@/components/Login.vue'
+import Register from '@/components/Register.vue'
 
 export default {
   name: 'Home',
   components: {
-    HelloWorld
+    Header,
+    Login,
+    Register
   }
 }
 </script>

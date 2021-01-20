@@ -5,13 +5,9 @@ backend/.env
 backend/migrations
 backend/seeders
 
-frontend/node_modules
-frontend/dist
-
 frontend/.DS_Store
 frontend/node_modules
-frontend//dist
-
+frontend/dist
 
 # local env files
 frontend/.env.local
