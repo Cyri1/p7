@@ -7,14 +7,13 @@ export default new Vuex.Store({
   state: {
     userId: null,
     username: null,
-    isAdmin: false,
-    token: null
+    isAdmin: false
   },
   mutations: {
     LOGIN_SUCCESS (state, response) {
       state.userId = response.userId
+      state.username = response.username
       state.isAdmin = response.isAdmin
-      state.token = response.token
     }
   },
   actions: {},

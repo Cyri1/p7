@@ -1,37 +1,106 @@
 <template lang="">
   <div>
     <div class="card my-3">
-      <div class="card-header">
-        <h5>Titre du post</h5>
+      <div class="card-header d-flex justify-content-between ">
+        <h5 class="d-inline-block">{{ postTitle }}</h5>
+        <span v-if="userId == postUserId || isAdmin"
+          ><a class="d-inline-block mr-2"><b-icon-pencil></b-icon-pencil></a
+          ><a class="d-inline-block"><b-icon-trash></b-icon-trash></a
+        ></span>
       </div>
       <div class="card-body">
-        <img
-          src="https://images.unsplash.com/photo-1521714161819-15534968fc5f?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80"
-          class="card-img-top img-resize rounded mx-auto d-block"
-          alt="post image"
-        />
+        <div v-if="postImageUrl" class="img-post">
+          <img
+            :src="postImageUrl"
+            class="card-img-top img-resize d-block"
+            alt="post image"
+          />
+          <hr />
+        </div>
         <p class="card-text mt-2">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Repudiandae
-          minima tenetur esse et sapiente delectus sed, animi enim, est fugiat
-          iste quidem earum aspernatur debitis voluptas tempore quibusdam
-          blanditiis ea, doloremque vero quam nemo exercitationem unde. Nulla
-          vitae voluptatem deleniti, obcaecati laborum maxime assumenda soluta
-          molestiae suscipit, tempore, earum error.
+          {{ postContent }}
         </p>
       </div>
       <div class="d-flex justify-content-between m-2">
-          <small class="text-muted d-inline-block">Last updated 3 mins ago</small><small class="d-inline-block">Auteur</small>
+        <span class="d-inline-block"
+          ><small>{{ postUserUsername }} - </small
+          ><small class="text-muted">{{
+            createdAt !== updatedAt
+              ? 'Créé le ' + createdAt
+              : 'Modifié le ' + updatedAt
+          }}</small></span
+        >
+        <a class="d-inline-block">
+          <b-badge variant="primary">{{ likes.length }}</b-badge
+          ><b-icon font-scale="1.5" icon="hand-thumbs-up"></b-icon>
+        </a>
+      </div>
+      <div v-if="comments.length" class="accordion" role="tablist">
+        <b-card no-body class="mb-1">
+          <b-card-header header-tag="header" class="p-1" role="tab">
+            <b-button
+              :class="'btn-sm text-left'"
+              block
+              v-b-toggle="'accordion-' + postId"
+              variant="light"
+              >{{ comments.length }} Commentaires :</b-button
+            >
+          </b-card-header>
+          <b-collapse
+            :id="'accordion-' + postId"
+            accordion="my-accordion"
+            role="tabpanel"
+          >
+            <b-card-body>
+              <Comment
+                v-for="(comment, index) in comments"
+                :key="index"
+                :commentContent="comment.commentContent"
+                :commentId="comment.commentId"
+                :updatedAt="comment.updatedAt"
+                :createdAt="comment.createdAt"
+                :UserImageUrl="comment.User.imageUrl"
+                :UserUsername="comment.User.username"
+                :commentUserId="comment.User.userId"
+              ></Comment>
+            </b-card-body>
+          </b-collapse>
+        </b-card>
       </div>
     </div>
   </div>
 </template>
 <script>
+import Comment from '@/components/Comment.vue'
+import { mapState } from 'vuex'
+
 export default {
-  name: 'Post'
+  name: 'Post',
+  components: {
+    Comment
+  },
+  computed: {
+    ...mapState(['userId', 'isAdmin'])
+  },
+  props: [
+    'createdAt',
+    'postContent',
+    'postId',
+    'postImageUrl',
+    'postTitle',
+    'updatedAt',
+    'postUserId',
+    'postUserImageUrl',
+    'postUserUsername',
+    'comments',
+    'likes'
+  ]
 }
 </script>
 <style>
 .img-resize {
-  max-width: 500px;
+  max-height: 400px;
+  -o-object-fit: contain;
+  object-fit: contain;
 }
 </style>

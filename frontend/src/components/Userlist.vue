@@ -1,58 +1,39 @@
 <template>
-  <div>
-    <Header></Header>
-    <Userlist></Userlist>
-    <div class="container">
-      <Post
-        v-for="(post, index) in posts"
-        :key="index"
-        :createdAt="post.createdAt"
-        :postContent="post.postContent"
-        :postId="post.postId"
-        :postImageUrl="post.postImageUrl"
-        :postTitle="post.postTitle"
-        :updatedAt="post.updatedAt"
-        :postUserId="post.User.userId"
-        :postUserImageUrl="post.User.ImageUrl"
-        :postUserUsername="post.User.username"
-        :comments="post.Comments"
-        :likes="post.Likes"
-      ></Post>
+  <b-sidebar id="sidebar-1" title="Liste des utilisateurs" shadow>
+    <div class="px-3 py-2">
+      <b-list-group style="max-width: 300px;">
+        <b-list-group-item
+          v-for="(user, index) in users"
+          :key="index"
+          class="d-flex align-items-center mb-2"
+        >
+          <b-avatar class="mr-3"></b-avatar>
+          <span class="mr-auto">{{ user.username }}</span>
+        </b-list-group-item>
+      </b-list-group>
     </div>
-  </div>
+  </b-sidebar>
 </template>
 <script>
-import { mapState } from 'vuex'
-import Header from '@/components/Header.vue'
-import Post from '@/components/Post.vue'
-import Userlist from '@/components/Userlist.vue'
 import axios from 'axios'
 
 export default {
-  name: 'Wall',
-  components: {
-    Header,
-    Post,
-    Userlist
-  },
+  name: 'Userlist',
   data () {
     return {
-      posts: []
+      users: []
     }
-  },
-  computed: {
-    ...mapState(['userId', 'username', 'token', 'isAdmin'])
   },
   mounted () {
     axios
-      .get('http://localhost:3000/api/posts', {
+      .get('http://localhost:3000/api/users', {
         headers: {
           Authorization: 'Bearer ' + localStorage.getItem('token')
         }
       })
       .then(response => {
         console.log(response)
-        this.posts = response.data.posts
+        this.users = response.data
       })
       .catch(error => {
         if (error.response) {
@@ -75,4 +56,4 @@ export default {
   }
 }
 </script>
-<style></style>
+<style lang=""></style>
