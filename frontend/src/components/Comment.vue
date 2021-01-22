@@ -12,7 +12,7 @@
               ? 'Créé le ' + createdAt
               : 'Modifié le ' + updatedAt
           }}</small></span
-        ><span v-if="userId == commentUserId || isAdmin"
+        ><span v-if="userIdState == commentUserId || isAdminState"
           ><a class="d-inline-block mr-2"><b-icon-pencil></b-icon-pencil></a
           ><a class="d-inline-block"><b-icon-trash></b-icon-trash></a></span
         >
@@ -26,7 +26,7 @@ import { mapState } from 'vuex'
 export default {
   name: 'Comment',
   computed: {
-    ...mapState(['userId', 'isAdmin'])
+    ...mapState(['userIdState', 'isAdminState'])
   },
   props: [
     'commentContent',

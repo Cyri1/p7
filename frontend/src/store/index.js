@@ -5,15 +5,15 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    userId: null,
-    username: null,
-    isAdmin: false
+    userIdState: null,
+    usernameState: null,
+    isAdminState: false
   },
   mutations: {
     LOGIN_SUCCESS (state, response) {
-      state.userId = response.userId
-      state.username = response.username
-      state.isAdmin = response.isAdmin
+      state.userIdState = response.userId
+      state.usernameState = response.username
+      state.isAdminState = response.isAdmin
     }
   },
   actions: {},

@@ -3,7 +3,7 @@
     <div class="card my-3">
       <div class="card-header d-flex justify-content-between ">
         <h5 class="d-inline-block">{{ postTitle }}</h5>
-        <span v-if="userId == postUserId || isAdmin"
+        <span v-if="userIdState == postUserId || isAdminState"
           ><a class="d-inline-block mr-2"><b-icon-pencil></b-icon-pencil></a
           ><a class="d-inline-block"><b-icon-trash></b-icon-trash></a
         ></span>
@@ -80,7 +80,7 @@ export default {
     Comment
   },
   computed: {
-    ...mapState(['userId', 'isAdmin'])
+    ...mapState(['userIdState', 'isAdminState'])
   },
   props: [
     'createdAt',
