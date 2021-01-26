@@ -1,35 +1,103 @@
 <template>
-  <div class="d-flex justify-content-center">
-    <form class="card m-3 p-4 w-75">
-      <h3>Créer un compte :</h3>
-      <div class="row-form mt-2">
-        <label for="email">Email :</label>
-        <input class="form-control" id="email" placeholder="email" type="email" />
-      </div>
-      <div class="row-form mt-2">
-        <label for="password">Mot de passe :</label>
-        <input class="form-control" id="password" placeholder="Mot de passe" type="password" />
-      </div>
-      <div class="row-form mt-2">
-        <label for="firstname">Nom d'utilisateur :</label>
-        <input class="form-control" id="username" placeholder="Nom d'utilisateur" type="text" />
-      </div>
-      <div class="row-form mt-2">
-        <label for="firstname">Prénom :</label>
-        <input class="form-control" id="firstname" placeholder="Prénom" type="text" />
-      </div>
-      <div class="row-form mt-2">
-        <label for="lastname">Nom :</label>
-        <input class="form-control" id="lastname" placeholder="Nom" type="text" />
-      </div>
-      <div>
-        <button class="btn btn-primary mt-3" type="submit">Envoyer</button>
-      </div>
-    </form>
+  <div>
+    <b-card class="mt-5">
+      <b-card-body>
+        <b-card-title><h4>Créer un compte :</h4></b-card-title>
+        <b-row>
+          <b-col>
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>Prénom :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.firstname"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>Nom :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.lastname"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>Nom d'utilisateur :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.username"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>Adresse email :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.email"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>A propos de moi :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-textarea rows="3" max-rows="6"></b-form-textarea>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-2">
+              <b-col sm="3">
+                <label>Image de profil :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-file
+                  placeholder="Image de profil"
+                  size="sm"
+                  accept="image/jpeg, image/png, image/gif"
+                ></b-form-file>
+              </b-col>
+            </b-row>
+
+            <b-row class="m-2">
+              <b-button @click="register()">Envoyer</b-button>
+            </b-row>
+
+          </b-col>
+        </b-row>
+      </b-card-body>
+    </b-card>
   </div>
 </template>
 <script>
 export default {
-  name: 'Register'
+  name: 'Register',
+  data () {
+    return {
+      formData: {
+        firstname: '',
+        lastname: '',
+        username: '',
+        email: '',
+        bio: ''
+      }
+    }
+  }
 }
 </script>

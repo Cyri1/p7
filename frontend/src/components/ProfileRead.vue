@@ -4,7 +4,7 @@
       <b-card-body>
         <b-card-title><h4>Profil utilisateur :</h4></b-card-title>
         <b-row>
-          <b-col cols="10">
+          <b-col>
             <b-card-sub-title class="my-3"
               >Informations personnelles :</b-card-sub-title
             >
@@ -50,27 +50,35 @@
                 <label>A propos de moi :</label>
               </b-col>
               <b-col sm="9">
-                <span class="text-muted"
-                  >{{ user.bio }} Lorem ipsum dolor sit, amet consectetur
-                  adipisicing elit. Molestiae nemo beatae cupiditate optio cum
-                  id, voluptatibus est recusandae facilis eaque similique dicta
-                  tempora impedit laboriosam obcaecati culpa numquam ea.
-                  Corrupti, vitae molestias, eligendi maiores quo sint quae
-                  doloribus eveniet, animi quasi dignissimos laborum sit tempora
-                  cum reprehenderit illo! Debitis, iure.</span
-                >
+                <span class="text-muted">{{ user.bio }}</span>
               </b-col>
             </b-row>
+          </b-col>
+          <b-col sm="4"
+            ><b-img
+              v-if="user.imageUrl"
+              thumbnail
+              fluid
+              :src="'http://localhost:3000/images/' + user.imageUrl"
+              alt="Image de profil"
+              class="mt-5 mb-2 w-100"
+            ></b-img>
+            <b-icon
+              icon="person"
+              font-scale="10"
+              class="mt-5 mb-2 w-100 text-black-50"
+            ></b-icon
+          ></b-col>
+        </b-row>
+        <b-row v-if="posts.length">
+          <b-col>
+            <b-row>
+              <b-card-sub-title class="my-3"
+                >Messages postés par l'utilisateur :</b-card-sub-title
+              >
+            </b-row>
 
-            <b-card-sub-title class="my-3"
-              >Messages postés par l'utilisateur :</b-card-sub-title
-            >
-
-            <div
-              v-if="posts.length"
-              v-for="(post, index) in posts"
-              :key="index"
-            >
+            <b-row v-for="(post, index) in posts" :key="index">
               <b-button
                 variant="outline-secondary"
                 v-b-toggle="'collapse-' + post.postId"
@@ -78,19 +86,12 @@
                 size="sm"
                 >{{ post.postTitle }}</b-button
               >
-              <b-collapse :id="'collapse-' + post.postId">
-                <b-card>{{ post.postContent }}</b-card>
+
+              <b-collapse class="w-100" :id="'collapse-' + post.postId">
+                <b-col class="card my-1 py-2">{{ post.postContent }}</b-col>
               </b-collapse>
-            </div>
+            </b-row>
           </b-col>
-          <b-col
-            ><b-img
-              thumbnail
-              fluid
-              src="https://picsum.photos/250/250/?image=54"
-              alt="Image 1"
-            ></b-img
-          ></b-col>
         </b-row>
       </b-card-body>
     </b-card>

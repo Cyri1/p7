@@ -20,9 +20,6 @@
               icon="house-fill"
               variant="success"
             ></b-icon>
-            <p>id {{ user.userId }}</p>
-            <p>state : {{ userIdState }}</p>
-            
           </router-link>
         </b-list-group-item>
       </b-list-group>

@@ -3,7 +3,7 @@
     <Header></Header>
     <Userlist></Userlist>
     <div class="container">
-      <ProfileWrite v-if="isAdminState || user.isMe" :posts="posts"></ProfileWrite>
+      <ProfileWrite v-if="isAdminState || user.isMe" :user="user" :posts="posts"></ProfileWrite>
       <ProfileRead v-else :user="user" :posts="posts"></ProfileRead>
     </div>
   </div>
@@ -64,8 +64,8 @@ export default {
           }
         })
         .then(response => {
-            console.log(response)
-            this.posts = response.data.posts
+          console.log(response)
+          this.posts = response.data.posts
         })
         .catch(error => {
           if (error.response) {

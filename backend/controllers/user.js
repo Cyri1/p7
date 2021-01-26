@@ -120,7 +120,7 @@ exports.findOneUser = (req, res, next) => {
     var isMe = userId === paramId ? true : false; // pour afficher des boutons d'édition sur le frontend pour mon profile
 
     models.User.findOne({
-        attributes: ['firstname', 'lastname', 'username', 'email', 'imageUrl', 'bio'],
+        attributes: ['firstname', 'lastname', 'username', 'email', 'imageUrl', 'bio', 'userId'],
         where: {
             userId: req.params.userId
         }
@@ -135,6 +135,7 @@ exports.findOneUser = (req, res, next) => {
                 username: user.username,
                 email: email,
                 bio: user.bio,
+                userId: user.userId,
                 imageUrl: user.imageUrl,
                 isMe: isMe
             });
@@ -168,15 +169,25 @@ exports.updateUser = (req, res, next) => {
     const userId = decodedToken.userId;
     const isAdmin = decodedToken.isAdmin;
 
+    const buff = Buffer.from(req.body.email, 'utf-8');
+    const base64 = buff.toString('base64');
+
+    console.log(req.file)
     //si req.file existe on modifie l'url image
     const userObject = req.file ? {
-        ...req.body.user,
-        imageUrl: req.file.filename
+        ...req.body,
+        imageUrl: req.file.filename,
+        email: base64
+
     } : {
         //si pas de req.file
-        ...req.body
+        ...req.body,
+        email: base64
+
     };
 
+
+    console.log(userObject)
     if (req.params.userId == userId || isAdmin) {
         models.User.update({
                 ...userObject,

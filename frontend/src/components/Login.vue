@@ -1,42 +1,47 @@
 <template>
-  <div class="d-flex justify-content-center">
-    <form class="card m-3 p-4 w-75">
-      <h3>Connexion :</h3>
-      <div class="row-form mt-2">
-        <label for="email-login">Email :</label>
-        <input
-          class="form-control"
-          id="email-login"
-          placeholder="Email"
-          type="email"
-          v-model="formData.emailLogin"
-        />
-      </div>
-      <div class="row-form mt-2">
-        <label for="password-login">Mot de passe :</label>
-        <input
-          class="form-control"
-          id="password-login"
-          placeholder="Mot de passe"
-          type="password"
-          v-model="formData.passwordLogin"
-        />
-      </div>
-      <div class="row-form mt-2">
-        <div v-show="loginSuccess" class="alert alert-danger text-center">
-          {{ error }}
-        </div>
-      </div>
-      <div>
-        <button
-          class="btn btn-primary mt-3"
-          type="submit"
-          v-on:click.prevent="submitLogin"
-        >
-          Se connecter
-        </button>
-      </div>
-    </form>
+  <div>
+    <b-card class="mt-5">
+      <b-card-body>
+        <b-card-title><h4>Connexion :</h4></b-card-title>
+        <b-row>
+          <b-col>
+            <b-row class="my-3">
+              <b-col sm="3">
+                <label>Adresse email :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.emailLogin"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-3">
+              <b-col sm="3">
+                <label>Mot de passe :</label>
+              </b-col>
+              <b-col sm="7">
+                <b-form-input
+                  v-model="formData.passwordLogin"
+                  :state="null"
+                ></b-form-input>
+              </b-col>
+            </b-row>
+
+            <b-row class="my-3">
+              <b-col md="3" class="alert alert-danger text-center" offset-md="5" v-show="loginSuccess">{{
+                error
+              }}</b-col>
+            </b-row>
+
+            <b-row class="m-2">
+              <b-button @click="submitLogin()">Connexion</b-button>
+            </b-row>
+          </b-col>
+        </b-row>
+      </b-card-body>
+    </b-card>
   </div>
 </template>
 <script>
