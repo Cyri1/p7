@@ -265,9 +265,25 @@ exports.deleteUser = (req, res, next) => {
             userId: req.params.userId
         }
     }).then((user) => {
-        //fs.unlinkSync(`images/` + user.imageUrl);
 
         if (user.userId == userId || isAdmin) { // vérifie si le compte devant être supprimé appartient à la personne connecté ou si c'est un admin
+
+        if (user.imageUrl) {
+            fs.unlinkSync(`images/${user.imageUrl}`);
+        }
+
+        models.Post.findAll({
+            where: {
+                userId: user.userId
+            }
+        }).then((posts) => {
+            if (posts) {
+                for (post of posts) {
+                    if (post.postImageUrl) {
+                        fs.unlinkSync(`images/${post.postImageUrl}`);
+                    }
+                }
+            }
             models.Comment.destroy({
                     where: {
                         userId: user.userId
@@ -297,7 +313,7 @@ exports.deleteUser = (req, res, next) => {
                 )
                 .catch(error => res.status(400).json({
                     error
-                }));
+                }))});
         } else {
             res.status(403).json({
                 error: 'Privilèges insufisants pour supprimer cet utilisateur'

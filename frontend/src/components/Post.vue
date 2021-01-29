@@ -13,7 +13,7 @@
       <div class="card-body">
         <div v-if="postImageUrl" class="img-post">
           <img
-            :src="postImageUrl"
+            :src="'http://localhost:3000/images/' + postImageUrl"
             class="card-img-top img-resize d-block"
             alt="post image"
           />

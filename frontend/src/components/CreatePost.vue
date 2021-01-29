@@ -9,7 +9,7 @@
           </b-col>
           <b-col sm="10">
             <ValidationProvider
-              rules="required|min:3|max:20"
+              rules="required|min:3|max:100"
               name="titre du post"
               v-slot="{ errors }"
             >

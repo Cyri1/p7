@@ -13,7 +13,7 @@ exports.createPost = (req, res, next) => {
     const userId = decodedToken.userId;
     const title = req.body.postTitle;
     const content = req.body.postContent;
-    const imageUrl = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : null;
+    const imageUrl = req.file ? req.file.filename : null;
 
     models.Post.create({
             userId: userId,
@@ -30,15 +30,6 @@ exports.createPost = (req, res, next) => {
 }
 
 exports.findAllPosts = (req, res, next) => {
-
-    // const token = req.headers.authorization.split(' ')[1];
-    // const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET');
-    // const userId = decodedToken.userId;
-    // const isAdmin = decodedToken.isAdmin;
-    // const me = [{
-    //     userId: userId,
-    //     isAdmin: isAdmin
-    // }] // pour pouvoir afficher un bouton d'édition de post uniqement sur les posts appartenant au user connecté et aux admins
 
     models.Post.findAll({
             include: [{

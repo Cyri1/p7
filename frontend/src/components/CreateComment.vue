@@ -63,6 +63,7 @@ export default {
             })
             .then(response => {
               console.log(response)
+              this.$root.$emit('bv::toggle::collapse', 'post-comment-' + this.postId)
               bus.$emit('updatePosts', response.data.posts)
             })
             .catch(error => {

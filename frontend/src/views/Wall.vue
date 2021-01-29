@@ -21,6 +21,7 @@
         :likes="post.Likes"
       ></Post>
       <EditPost></EditPost>
+      <EditComment></EditComment>
     </div>
   </div>
 </template>
@@ -30,6 +31,7 @@ import Post from '@/components/Post.vue'
 import Userlist from '@/components/Userlist.vue'
 import CreatePost from '@/components/CreatePost.vue'
 import EditPost from '@/components/EditPost.vue'
+import EditComment from '@/components/EditComment.vue'
 import axios from 'axios'
 import { bus } from '../main'
 
@@ -40,7 +42,8 @@ export default {
     Post,
     CreatePost,
     Userlist,
-    EditPost
+    EditPost,
+    EditComment
   },
   data () {
     return {
