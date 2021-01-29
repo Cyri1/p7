@@ -3,6 +3,7 @@ const {
     Op
 } = require('sequelize');
 const models = require('../models');
+const fs = require('fs');
 
 exports.createPost = (req, res, next) => {
 
@@ -91,9 +92,11 @@ exports.updatePost = (req, res, next) => {
     }).then((post) => {
         if (post.userId == userId || isAdmin) { // vérifie si le post devant être modifié appartient à la personne connecté ou si c'est un admin
             //si req.file existe on modifie l'url image
+            const imageUrl = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : null;
+
             const postObject = req.file ? {
                 ...req.body.post,
-                postImageUrl: req.file.filename
+                postImageUrl: imageUrl
             } : {
                 //si pas de req.file
                 ...req.body
@@ -206,6 +209,10 @@ exports.deletePost = (req, res, next) => {
         }
     }).then((post) => {
         if (post.userId == userId || isAdmin) { // vérifie si le post devant être supprimé appartient à la personne connecté ou si c'est un admin
+        if (post.postImageUrl) {
+            const filename = post.postImageUrl.split('/images/')[1];
+            fs.unlinkSync(`images/${filename}`);
+        }
             models.Comment.destroy({
                     where: {
                         postId: post.postId
@@ -216,7 +223,7 @@ exports.deletePost = (req, res, next) => {
                             postId: post.postId
                         }
                     })
-                    .then(() =>
+                    .then(() => 
                         models.Post.destroy({
                             where: {
                                 postId: post.postId

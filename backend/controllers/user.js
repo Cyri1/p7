@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const models = require('../models');
+const fs = require('fs');
 
 //réception d'une demande de création de compte (post)
 exports.signup = (req, res, next) => {
@@ -264,6 +265,8 @@ exports.deleteUser = (req, res, next) => {
             userId: req.params.userId
         }
     }).then((user) => {
+        //fs.unlinkSync(`images/` + user.imageUrl);
+
         if (user.userId == userId || isAdmin) { // vérifie si le compte devant être supprimé appartient à la personne connecté ou si c'est un admin
             models.Comment.destroy({
                     where: {

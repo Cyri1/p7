@@ -3,7 +3,9 @@
     <Header></Header>
     <Userlist></Userlist>
     <div class="container">
+      <CreatePost v-on:updatePosts="updatePosts($event)"></CreatePost>
       <Post
+        v-on:updatePosts="updatePosts($event)"
         v-for="(post, index) in posts"
         :key="index"
         :createdAt="post.createdAt"
@@ -18,6 +20,7 @@
         :comments="post.Comments"
         :likes="post.Likes"
       ></Post>
+      <EditPost></EditPost>
     </div>
   </div>
 </template>
@@ -25,19 +28,35 @@
 import Header from '@/components/Header.vue'
 import Post from '@/components/Post.vue'
 import Userlist from '@/components/Userlist.vue'
+import CreatePost from '@/components/CreatePost.vue'
+import EditPost from '@/components/EditPost.vue'
 import axios from 'axios'
+import { bus } from '../main'
 
 export default {
   name: 'Wall',
   components: {
     Header,
     Post,
-    Userlist
+    CreatePost,
+    Userlist,
+    EditPost
   },
   data () {
     return {
       posts: []
     }
+  },
+  methods: {
+    updatePosts (event) {
+      console.log(event)
+      this.posts = event
+    }
+  },
+  created () {
+    bus.$on('updatePosts', data => {
+      this.posts = data
+    })
   },
   mounted () {
     axios
