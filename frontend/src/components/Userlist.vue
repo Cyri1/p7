@@ -8,7 +8,12 @@
             :to="'/profile/' + user.userId"
             title="Profil"
           >
-            <b-avatar class="mr-3"></b-avatar>
+            <b-avatar
+              v-if="user.imageUrl"
+              :src="'http://localhost:3000/images/' + user.imageUrl"
+              class="mr-3"
+            ></b-avatar>
+            <b-avatar v-else class="mr-3"></b-avatar>
             <span class="mr-auto">{{ user.username }}</span>
             <b-icon
               v-if="user.isAdmin"

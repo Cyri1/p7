@@ -8,9 +8,7 @@
         <span class="d-inline-block m-2"
           ><small>{{ UserUsername }} - </small
           ><small class="text-muted">{{
-            createdAt !== updatedAt
-              ? 'Créé le ' + createdAt
-              : 'Modifié le ' + updatedAt
+            'Créé le ' + formatCreatedAt
           }}</small></span
         ><span v-if="userIdState == commentUserId || isAdminState"
           ><a
@@ -29,11 +27,21 @@
 import { mapState } from 'vuex'
 import axios from 'axios'
 import { bus } from '../main'
+import moment from 'moment'
 
 export default {
   name: 'Comment',
+  data () {
+    return {
+      formatCreatedAt: ''
+    }
+  },
   computed: {
     ...mapState(['userIdState', 'isAdminState'])
+  },
+  created () {
+    moment.locale('fr')
+    this.formatCreatedAt = moment(this.createdAt).format('lll')
   },
   methods: {
     deleteComment () {

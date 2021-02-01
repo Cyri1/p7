@@ -4,7 +4,10 @@
       <div class="card-header d-flex justify-content-between ">
         <h5 class="d-inline-block">{{ postTitle }}</h5>
         <span v-if="userIdState == postUserId || isAdminState"
-          ><a class="d-inline-block mr-2" v-b-modal="'bv-modal-example'" @click="editPost()"
+          ><a
+            class="d-inline-block mr-2"
+            v-b-modal="'bv-modal-example'"
+            @click="editPost()"
             ><b-icon-pencil></b-icon-pencil></a
           ><a class="d-inline-block" @click="deletePost()"
             ><b-icon-trash></b-icon-trash></a
@@ -32,12 +35,10 @@
             <b-icon font-scale="1.5" icon="chat-text"></b-icon></button
           ><small>{{ postUserUsername }} - </small
           ><small class="text-muted">{{
-            createdAt !== updatedAt
-              ? 'Créé le ' + createdAt
-              : 'Modifié le ' + updatedAt
+            'Créé le ' + formatCreatedAt
           }}</small></span
         >
-        <a class="d-inline-block">
+        <a class="d-inline-block" :id="'popover-' + postId">
           <b-badge variant="primary">{{ likes.length }}</b-badge
           ><b-icon
             font-scale="1.5"
@@ -45,13 +46,19 @@
             @click="like()"
           ></b-icon>
         </a>
+
+        <b-popover triggers="hover" :target="'popover-' + postId">
+          <div v-for="(like, index) in likes" :key="index">
+            {{ like.User.username }}
+          </div>
+        </b-popover>
       </div>
       <b-collapse :id="'post-comment-' + postId">
         <CreateComment :postId="postId"></CreateComment>
       </b-collapse>
 
       <div v-if="comments.length" class="accordion" role="tablist">
-        <b-card no-body class="mb-1">
+        <b-card no-body>
           <b-card-header header-tag="header" class="p-1" role="tab">
             <b-button
               :class="'btn-sm text-left'"
@@ -91,12 +98,22 @@ import CreateComment from '@/components/CreateComment.vue'
 import { mapState } from 'vuex'
 import axios from 'axios'
 import { bus } from '../main'
+import moment from 'moment'
 
 export default {
   name: 'Post',
   components: {
     Comment,
     CreateComment
+  },
+  data () {
+    return {
+      formatCreatedAt: ''
+    }
+  },
+  created () {
+    moment.locale('fr')
+    this.formatCreatedAt = moment(this.createdAt).format('lll')
   },
   methods: {
     like () {

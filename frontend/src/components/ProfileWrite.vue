@@ -102,9 +102,9 @@
                 </b-row>
 
                 <b-row class="m-2 mt-5" align-v="end">
-                  <b-button type="submit" :disabled="invalid" class="mr-2"
+                  <b-button type="submit" :disabled="invalid" class="mr-2 mb-2"
                     >Modifier</b-button
-                  ><b-button @click="deleteUser()" variant="outline-danger"
+                  ><b-button @click="deleteUser()" class="mb-2" variant="outline-danger"
                     >Supprimer le compte</b-button
                   >
                 </b-row>
@@ -135,6 +135,7 @@
                     placeholder="Image de profil"
                     size="sm"
                     accept="image/jpeg, image/png, image/gif"
+                    ref="file-input"
                   ></b-form-file>
                   <small class="text-danger">{{ errors[0] }}</small>
                 </ValidationProvider>
@@ -158,7 +159,20 @@
                   >
 
                   <b-collapse class="w-100" :id="'collapse-' + post.postId">
-                    <b-col class="card my-1 py-2">{{ post.postContent }}</b-col>
+                    <b-col class="card my-1 py-2">
+                      <b-row v-if="post.postImageUrl" class="my-1">
+                        <b-img
+                          :src="
+                            'http://localhost:3000/images/' + post.postImageUrl
+                          "
+                          fluid
+                          thumbnail
+                          center
+                          alt="image du post (édition)"
+                        ></b-img>
+                      </b-row>
+                      <b-row class="m-3">{{ post.postContent }}</b-row>
+                    </b-col>
                   </b-collapse>
                 </b-row>
               </b-col>
@@ -272,6 +286,7 @@ export default {
         })
         .then(response => {
           this.getUserInfos()
+          this.$refs['file-input'].reset()
           console.log(response)
           this.$bvModal.msgBoxConfirm('Utilisateur modifié avec succès.', {
             title: 'Mise à jour des infos utilisateur',

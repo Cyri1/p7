@@ -1,20 +1,27 @@
 <template>
   <div>
-    <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar toggleable="lg" type="light" class="shadow-sm" variant="white">
       <b-navbar-brand
-        ><router-link to="/wall"
-          ><h1>Groupomania</h1></router-link
+        ><router-link to="/wall" class="text-decoration-none">
+          <div class="d-flex ">
+            <img src="../assets/icon.png" alt="Logo header" /><span
+              class="header-text-color ml-2"
+              ><h1>Groupomania</h1></span
+            >
+          </div></router-link
         ></b-navbar-brand
       >
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
       <b-collapse id="nav-collapse" is-nav>
         <!-- Right aligned nav items -->
         <b-navbar-nav v-show="isLogged()" class="ml-auto">
-          <b-nav-item class="border rounded-pill mx-3" href="#" v-b-toggle.sidebar-1
-            ><b-icon icon="people-fill" variant="secondary"></b-icon> Liste des
-            utilisateurs</b-nav-item
+          <b-nav-item class="my-2" href="#" v-b-toggle.sidebar-1
+            ><span class="border rounded-pill m-3 p-2"
+              ><b-icon icon="people-fill" variant="secondary"></b-icon> Liste
+              des utilisateurs</span
+            ></b-nav-item
           >
-          <b-nav-item-dropdown right>
+          <b-nav-item-dropdown right class="mt-2">
             <!-- Using 'button-content' slot -->
             <template #button-content>
               <em>{{ usernameState }}</em>
@@ -28,8 +35,7 @@
             <b-dropdown-item href="#"
               ><router-link :to="'/'"
                 ><span @click="logout()"
-                  ><b-icon icon="box-arrow-left" variant="secondary"></b-icon>
-                  Se déconnecter</span
+                  ><b-icon icon="box-arrow-left" variant="secondary"></b-icon> Se déconnecter</span
                 ></router-link
               ></b-dropdown-item
             >
@@ -57,4 +63,8 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.header-text-color {
+  color: red;
+}
+</style>

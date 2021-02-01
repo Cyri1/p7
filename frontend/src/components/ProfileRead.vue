@@ -89,7 +89,18 @@
               >
 
               <b-collapse class="w-100" :id="'collapse-' + post.postId">
-                <b-col class="card my-1 py-2">{{ post.postContent }}</b-col>
+                <b-col class="card my-1 py-2">
+                  <b-row v-if="post.postImageUrl" class="my-1">
+                    <b-img
+                      :src="'http://localhost:3000/images/' + post.postImageUrl"
+                      fluid
+                      thumbnail
+                      center
+                      alt="image du post (édition)"
+                    ></b-img>
+                  </b-row>
+                  <b-row class="m-3">{{ post.postContent }}</b-row>
+                </b-col>
               </b-collapse>
             </b-row>
           </b-col>
@@ -118,6 +129,7 @@ export default {
     }
   },
   mounted () {
+    console.log(this.posts)
     this.idParam = this.$router.currentRoute.params.userId
     this.getUserInfos()
     this.getUserPosts()

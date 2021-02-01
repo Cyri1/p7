@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="background-color">
     <Header></Header>
     <Userlist></Userlist>
     <div class="container">
@@ -45,4 +45,9 @@ export default {
   }
 }
 </script>
-<style></style>
+<style>
+.background-color {
+  background-color: rgb(252, 244, 245);
+  height: 100%;
+}
+</style>

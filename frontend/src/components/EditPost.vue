@@ -46,7 +46,7 @@
           </b-row>
           <b-row v-if="formData.postImageUrlEdit" class="my-1">
             <b-img
-              :src="formData.postImageUrlEdit"
+              :src="'http://localhost:3000/images/' + formData.postImageUrlEdit"
               fluid
               thumbnail
               center

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="background-color">
     <Header></Header>
     <div class="justify-content-center container mt-2">
         <b-tabs content-class="mt-3">
@@ -29,3 +29,10 @@ export default {
   }
 }
 </script>
+<style>
+.background-color {
+  background-color: rgb(252, 244, 245);
+  min-height: 100vh;
+  height: 100%;
+}
+</style>
