@@ -2,7 +2,7 @@
   <div>
     <div class="card my-3">
       <div class="card-header d-flex justify-content-between ">
-        <h5 class="d-inline-block">{{ postTitle }}</h5>
+        <h5 class="d-inline-block text-break">{{ postTitle }}</h5>
         <span v-if="userIdState == postUserId || isAdminState"
           ><a
             class="d-inline-block mr-2"
