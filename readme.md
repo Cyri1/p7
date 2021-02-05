@@ -37,7 +37,7 @@ http://localhost:3000/
 ```
 
 # database
-import  ```oc_p7_dev.sql```
+import  ```oc_p7_dev.sql``` available in backend folder
 
 ## pre loaded accounts in db :
 login : hulk@hulk.fr  (admin)
