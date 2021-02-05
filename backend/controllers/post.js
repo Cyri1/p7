@@ -15,6 +15,7 @@ exports.createPost = (req, res, next) => {
     const content = req.body.postContent;
     const imageUrl = req.file ? req.file.filename : null;
 
+    if (content !== '' && title !== '') {
     models.Post.create({
             userId: userId,
             postTitle: title,
@@ -27,6 +28,12 @@ exports.createPost = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }));
+    }
+    else {
+        res.status(400).json({
+            error: 'Veuillez vérifier les champs'
+        });
+    }
 }
 
 exports.findAllPosts = (req, res, next) => {
@@ -75,46 +82,53 @@ exports.updatePost = (req, res, next) => {
     const userId = decodedToken.userId;
     const isAdmin = decodedToken.isAdmin;
 
-    models.Post.findOne({
-        attributes: ['userId'],
-        where: {
-            postId: req.params.postId
-        }
-    }).then((post) => {
-        if (post.userId == userId || isAdmin) { // vérifie si le post devant être modifié appartient à la personne connecté ou si c'est un admin
-            //si req.file existe on modifie l'url image
-            const imageUrl = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : null;
+    if (req.body.postTitle !== '' && req.body.postContent !== '') {
 
-            const postObject = req.file ? {
-                ...req.body.post,
-                postImageUrl: imageUrl
-            } : {
-                //si pas de req.file
-                ...req.body
-            };
-            models.Post.update({
-                    ...postObject,
-                    postId: req.params.postId
-                }, {
-                    where: {
+        models.Post.findOne({
+            attributes: ['userId'],
+            where: {
+                postId: req.params.postId
+            }
+        }).then((post) => {
+            if (post.userId == userId || isAdmin) { // vérifie si le post devant être modifié appartient à la personne connecté ou si c'est un admin
+                //si req.file existe on modifie l'url image
+                const imageUrl = req.file ? `${req.protocol}://${req.get("host")}/images/${req.file.filename}` : null;
+    
+                const postObject = req.file ? {
+                    ...req.body.post,
+                    postImageUrl: imageUrl
+                } : {
+                    //si pas de req.file
+                    ...req.body
+                };
+                models.Post.update({
+                        ...postObject,
                         postId: req.params.postId
-                    }
-                })
-                .then(() => res.status(200).json({
-                    message: 'Post modifié avec succès'
-                }))
-                .catch(error => res.status(400).json({
-                    error
-                }));
-        } else {
-            res.status(403).json({
-                error: 'Privilèges insufisants pour modifier ce post'
-            });
-        }
-    }).catch(() => res.status(500).json({
-        error: 'erreur lors de la recherche de ce post'
-    }));
-
+                    }, {
+                        where: {
+                            postId: req.params.postId
+                        }
+                    })
+                    .then(() => res.status(200).json({
+                        message: 'Post modifié avec succès'
+                    }))
+                    .catch(error => res.status(400).json({
+                        error
+                    }));
+            } else {
+                res.status(403).json({
+                    error: 'Privilèges insufisants pour modifier ce post'
+                });
+            }
+        }).catch(() => res.status(500).json({
+            error: 'erreur lors de la recherche de ce post'
+        }));
+    }
+    else {
+        res.status(400).json({
+            error: 'Veuillez vérifier les champs'
+        });
+    }
 };
 
 exports.createComment = (req, res, next) => {
@@ -125,6 +139,8 @@ exports.createComment = (req, res, next) => {
     const userId = decodedToken.userId;
     const postId = req.params.postId;
     const commentContent = req.body.commentContent;
+
+    if (req.body.commentContent !== '') {
 
     models.Comment.create({
             userId: userId,
@@ -137,6 +153,12 @@ exports.createComment = (req, res, next) => {
         .catch(error => res.status(400).json({
             error
         }));
+    }
+    else {
+        res.status(400).json({
+            error: 'Veuillez vérifier les champs'
+        });
+    }
 }
 
 exports.createLike = (req, res, next) => {

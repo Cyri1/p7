@@ -11,51 +11,51 @@ exports.signup = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     const username = req.body.username;
-
-    if (!firstname || !lastname || !email || !password || !username) {
-        return res.status(400).json({
-            error: 'Veuillez remplir tous les champs.'
-        });
-    }
-
     const buff = Buffer.from(email, 'utf-8');
     const base64 = buff.toString('base64'); //masquage email
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    models.User.findOne({
-            attributes: ['email'],
-            where: {
-                email: base64
-            }
-        })
-        .then((exist) => {
-            if (!exist) {
-                //hash du password avec bcrypt
-                bcrypt.hash(req.body.password, 10)
-                    .then(hash => {
+    if (emailRegex.test(email) && username !== '' && firstname !== '' && lastname !== '' && lastname !== '' && password !== '') {
+        models.User.findOne({
+                attributes: ['email'],
+                where: {
+                    email: base64
+                }
+            })
+            .then((exist) => {
+                if (!exist) {
+                    //hash du password avec bcrypt
+                    bcrypt.hash(req.body.password, 10)
+                        .then(hash => {
 
-                        models.User.create({
-                                firstname: firstname,
-                                lastname: lastname,
-                                username: username,
-                                email: base64,
-                                password: hash
-                            })
-                            .then(() => res.status(201).json({
-                                message: 'Utilisateur créé !'
-                            }))
-                            .catch(error => res.status(400).json({
-                                error
-                            }));
+                            models.User.create({
+                                    firstname: firstname,
+                                    lastname: lastname,
+                                    username: username,
+                                    email: base64,
+                                    password: hash
+                                })
+                                .then(() => res.status(201).json({
+                                    message: 'Utilisateur créé !'
+                                }))
+                                .catch(error => res.status(400).json({
+                                    error
+                                }));
+                        })
+                } else {
+                    return res.status(409).json({
+                        error: 'L\'utilisateur existe déjà !'
                     })
-            } else {
-                return res.status(409).json({
-                    error: 'L\'utilisateur existe déjà !'
-                })
-            }
-        })
-        .catch(error => res.status(500).json({
-            error: 'pb vérification si l utilisateur existe'
-        }));
+                }
+            })
+            .catch(error => res.status(500).json({
+                error: 'pb vérification si l utilisateur existe'
+            }));
+    } else {
+        res.status(400).json({
+            error: 'Veuillez vérifier les champs'
+        });
+    }
 };
 
 
@@ -98,7 +98,7 @@ exports.login = (req, res, next) => {
                                 isAdmin: user.isAdmin
                             },
                             'RANDOM_TOKEN_SECRET', {
-                                expiresIn: '48h'
+                                expiresIn: '1h'
                             }
                         )
                     });
@@ -172,41 +172,66 @@ exports.updateUser = (req, res, next) => {
 
     const buff = Buffer.from(req.body.email, 'utf-8');
     const base64 = buff.toString('base64');
+    const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
-    console.log(req.file)
     //si req.file existe on modifie l'url image
-    const userObject = req.file ? {
-        ...req.body,
-        imageUrl: req.file.filename,
-        email: base64
+    if (emailRegex.test(req.body.email) && req.body.username !== '' && req.body.firstname !== '' && req.body.lastname !== '') {
+        
+        const userObject = req.file ? {
+            ...req.body,
+            imageUrl: req.file.filename,
+            email: base64
 
-    } : {
-        //si pas de req.file
-        ...req.body,
-        email: base64
+        } : {
+            //si pas de req.file
+            ...req.body,
+            email: base64
 
-    };
+        };
 
+        if (req.params.userId == userId || isAdmin) {
 
-    console.log(userObject)
-    if (req.params.userId == userId || isAdmin) {
-        models.User.update({
-                ...userObject,
-                userId: req.params.userId
-            }, {
+            models.User.findOne({
+                attributes: ['imageUrl'],
                 where: {
                     userId: req.params.userId
                 }
-            })
-            .then(() => res.status(200).json({
-                message: 'Utilisateur modifié avec succès'
-            }))
-            .catch(error => res.status(400).json({
-                error
+            }).then((user) => {
+                if (user) {
+                    if (user.imageUrl) {
+                        fs.unlinkSync(`images/${user.imageUrl}`)
+                    }
+                } else {
+                    res.status(404).json({
+                        error: 'Utilisateur introuvable'
+                    });
+                }
+            }).catch(() => res.status(500).json({
+                error: 'erreur lors de la recherche de cet utilisateur'
             }));
+
+            models.User.update({
+                    ...userObject,
+                    userId: req.params.userId
+                }, {
+                    where: {
+                        userId: req.params.userId
+                    }
+                })
+                .then(() => res.status(200).json({
+                    message: 'Utilisateur modifié avec succès'
+                }))
+                .catch(error => res.status(400).json({
+                    error
+                }));
+        } else {
+            res.status(403).json({
+                error: 'Privilèges insuffisants'
+            });
+        }
     } else {
-        res.status(403).json({
-            error: 'Privilèges insuffisants'
+        res.status(400).json({
+            error: 'Veuillez vérifier les champs'
         });
     }
 };
@@ -268,52 +293,53 @@ exports.deleteUser = (req, res, next) => {
 
         if (user.userId == userId || isAdmin) { // vérifie si le compte devant être supprimé appartient à la personne connecté ou si c'est un admin
 
-        if (user.imageUrl) {
-            fs.unlinkSync(`images/${user.imageUrl}`);
-        }
-
-        models.Post.findAll({
-            where: {
-                userId: user.userId
+            if (user.imageUrl) {
+                fs.unlinkSync(`images/${user.imageUrl}`);
             }
-        }).then((posts) => {
-            if (posts) {
-                for (post of posts) {
-                    if (post.postImageUrl) {
-                        fs.unlinkSync(`images/${post.postImageUrl}`);
+
+            models.Post.findAll({
+                where: {
+                    userId: user.userId
+                }
+            }).then((posts) => {
+                if (posts) {
+                    for (post of posts) {
+                        if (post.postImageUrl) {
+                            fs.unlinkSync(`images/${post.postImageUrl}`);
+                        }
                     }
                 }
-            }
-            models.Comment.destroy({
-                    where: {
-                        userId: user.userId
-                    }
-                }).then(() =>
-                    models.Like.destroy({
+                models.Comment.destroy({
                         where: {
                             userId: user.userId
                         }
-                    })
-                    .then(() =>
-                        models.Post.destroy({
+                    }).then(() =>
+                        models.Like.destroy({
                             where: {
                                 userId: user.userId
                             }
                         })
                         .then(() =>
-                            models.User.destroy({
+                            models.Post.destroy({
                                 where: {
                                     userId: user.userId
                                 }
                             })
-                            .then(() => res.status(200).json({
-                                message: 'Utilisateur supprimé avec succès'
-                            })))
+                            .then(() =>
+                                models.User.destroy({
+                                    where: {
+                                        userId: user.userId
+                                    }
+                                })
+                                .then(() => res.status(200).json({
+                                    message: 'Utilisateur supprimé avec succès'
+                                })))
+                        )
                     )
-                )
-                .catch(error => res.status(400).json({
-                    error
-                }))});
+                    .catch(error => res.status(400).json({
+                        error
+                    }))
+            });
         } else {
             res.status(403).json({
                 error: 'Privilèges insufisants pour supprimer cet utilisateur'

@@ -54,7 +54,8 @@ exports.updateComment = (req, res, next) => {
                 ...req.body
             };
 
-            models.Comment.update({
+            if (req.body.commentContent !== '') {
+             models.Comment.update({
                     ...commentObject,
                     commentId: req.params.commentId
                 }, {
@@ -67,7 +68,14 @@ exports.updateComment = (req, res, next) => {
                 }))
                 .catch(error => res.status(400).json({
                     error
-                }));
+                }));               
+            }
+            else {
+                res.status(400).json({
+                    error: 'Veuillez vérifier les champs'
+                });
+            }
+
         } else {
             res.status(403).json({
                 error: 'Privilèges insufisants pour modifier ce commentaire'
